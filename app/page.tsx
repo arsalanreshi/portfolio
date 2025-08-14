@@ -15,6 +15,7 @@ export default function Portfolio() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState("home")
   const [isScrolled, setIsScrolled] = useState(false)
+   const [mounted, setMounted] = useState(false)
   const { scrollYProgress } = useScroll()
   const heroRef = useRef(null)
   const aboutRef = useRef(null)
@@ -30,6 +31,11 @@ export default function Portfolio() {
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0])
 
   useEffect(() => {
+     setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted || typeof window === "undefined") return
     const handleScroll = () => {
       const sections = ["home", "about", "projects", "skills", "contact"]
       const scrollPosition = window.scrollY + 100
@@ -52,9 +58,10 @@ export default function Portfolio() {
 
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+   }, [mounted])
 
   const scrollToSection = (sectionId: string) => {
+    if (typeof document === "undefined") return
     const element = document.getElementById(sectionId)
     if (element) {
       element.scrollIntoView({ behavior: "smooth" })

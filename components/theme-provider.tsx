@@ -34,21 +34,27 @@ export function ThemeProvider({
 
   useEffect(() => {
     setMounted(true)
-    const storedTheme = localStorage?.getItem(storageKey) as Theme
-    if (storedTheme) {
-      setTheme(storedTheme)
+    if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
+      const storedTheme = localStorage.getItem(storageKey) as Theme
+      if (storedTheme) {
+        setTheme(storedTheme)
+      }
     }
   }, [storageKey])
 
   useEffect(() => {
-    if (!mounted) return
+    if (!mounted || typeof window === "undefined") return
 
     const root = window.document.documentElement
     root.classList.remove("light", "dark")
 
     if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
-      root.classList.add(systemTheme)
+      if (typeof window !== "undefined" && window.matchMedia) {
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+        root.classList.add(systemTheme)
+      } else {
+        root.classList.add("dark") // fallback for SSR
+      }
       return
     }
 
@@ -58,15 +64,11 @@ export function ThemeProvider({
   const value = {
     theme,
     setTheme: (theme: Theme) => {
-      if (typeof window !== "undefined") {
-        localStorage?.setItem(storageKey, theme)
+      if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
+        localStorage.setItem(storageKey, theme)
       }
       setTheme(theme)
     },
-  }
-
-  if (!mounted) {
-    return <>{children}</>
   }
 
   return (

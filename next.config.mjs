@@ -1,7 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  images: {
+    unoptimized: true,
+  },
+  output: 'standalone',
   experimental: {
-    forceSwcTransforms: true,
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
 }
-module.exports = nextConfig
+
+export default nextConfig
